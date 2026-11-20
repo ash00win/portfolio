@@ -31,6 +31,8 @@ export const metadata: Metadata = {
   },
   twitter: { card: "summary_large_image", title: defaultTitle, description: profile.seo.description },
   robots: { index: true, follow: true },
+  // Google Search Console ownership check. Keep it, or Search Console loses access.
+  verification: { google: "1Sa-4mBrvi4Co1Rb_I7Sd-ZSQVgZHbuSbGXjnEuJDOA" },
 };
 
 export const viewport: Viewport = {
