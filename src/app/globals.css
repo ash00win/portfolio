@@ -1,0 +1,818 @@
+@import "tailwindcss";
+
+/* Design tokens. Change colours here, never inline. Light theme only. */
+:root {
+  color-scheme: light;
+  --paper: #fafaf9;
+  --surface: #ffffff;
+  --ink: #0c0c0d;
+  --muted: #62646a; /* 5.9:1 on paper */
+  --line: #e7e5e2;
+  --primary: #0c0c0d;
+  --primary-hover: #2b2c30;
+  --on-primary: #ffffff;
+  --accent: #0f7a5c; /* 5.3:1 on paper */
+  --accent-2: #5b4ce0; /* 5.6:1 on paper */
+  --tint: #f2f1ef;
+  --glow: 0.22;
+  --ease: cubic-bezier(0.2, 0.7, 0.2, 1);
+  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-in-out: cubic-bezier(0.76, 0, 0.24, 1);
+  /* Extra delay for hero entrance animations while the intro screen plays. */
+  --intro-delay: 0s;
+}
+html[data-intro] {
+  --intro-delay: 1.9s;
+}
+
+@theme inline {
+  --color-paper: var(--paper);
+  --color-surface: var(--surface);
+  --color-ink: var(--ink);
+  --color-muted: var(--muted);
+  --color-line: var(--line);
+  --color-primary: var(--primary);
+  --color-primary-hover: var(--primary-hover);
+  --color-on-primary: var(--on-primary);
+  --color-accent: var(--accent);
+  --color-accent-2: var(--accent-2);
+  --color-tint: var(--tint);
+
+  --font-sans: var(--font-geist), ui-sans-serif, system-ui, sans-serif;
+  --font-mono: var(--font-geist-mono), ui-monospace, monospace;
+}
+
+html {
+  scroll-behavior: smooth;
+  scroll-padding-top: 6rem;
+}
+
+body {
+  background: var(--paper);
+  color: var(--ink);
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+}
+
+
+::selection {
+  background: var(--accent);
+  color: #fff;
+}
+
+:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 3px;
+  border-radius: 4px;
+}
+
+@layer components {
+  .text-gradient {
+    background: linear-gradient(90deg, var(--accent), var(--accent-2), var(--accent));
+    background-size: 200% auto;
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+
+  .bg-grid {
+    background-image:
+      linear-gradient(var(--line) 1px, transparent 1px),
+      linear-gradient(90deg, var(--line) 1px, transparent 1px);
+    background-size: 56px 56px;
+    mask-image: radial-gradient(ellipse 70% 60% at 50% 0%, #000 20%, transparent 75%);
+  }
+
+  .aurora {
+    position: absolute;
+    inset: 0;
+    overflow: hidden;
+    pointer-events: none;
+  }
+  .aurora::before,
+  .aurora::after {
+    content: "";
+    position: absolute;
+    width: 42rem;
+    height: 42rem;
+    border-radius: 9999px;
+    opacity: calc(var(--glow) * 1.6);
+    will-change: transform;
+  }
+  .aurora::before {
+    background: radial-gradient(closest-side, var(--accent), transparent);
+    top: -26rem;
+    left: -8rem;
+  }
+  .aurora::after {
+    background: radial-gradient(closest-side, var(--accent-2), transparent);
+    top: -22rem;
+    right: -12rem;
+  }
+
+  .spotlight-layer {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    background: radial-gradient(
+      600px circle at var(--mx, -999px) var(--my, -999px),
+      color-mix(in oklab, var(--accent) 10%, transparent),
+      transparent 60%
+    );
+  }
+
+  /* Card whose border lights up near the cursor; .tilt cards also lean towards it.
+     Don't put overflow-hidden on it (it would clip the glowing border). */
+  .glow-card {
+    position: relative;
+    isolation: isolate;
+    border: 1px solid var(--line);
+    background: var(--surface);
+    transform: perspective(1000px) translateY(var(--lift, 0)) rotateX(var(--rx, 0deg)) rotateY(var(--ry, 0deg));
+    transition:
+      transform 0.5s var(--ease-out),
+      box-shadow 0.5s var(--ease-out);
+  }
+  .glow-card:hover {
+    --lift: -4px;
+    box-shadow: 0 24px 50px -24px rgb(12 12 13 / 0.18);
+  }
+  .glow-card::before {
+    content: "";
+    position: absolute;
+    inset: -1px;
+    border-radius: inherit;
+    padding: 1px;
+    background: radial-gradient(
+      260px circle at var(--mx, -999px) var(--my, -999px),
+      var(--accent),
+      color-mix(in oklab, var(--accent-2) 60%, transparent) 40%,
+      transparent 70%
+    );
+    -webkit-mask:
+      linear-gradient(#000 0 0) content-box,
+      linear-gradient(#000 0 0);
+    -webkit-mask-composite: xor;
+    mask-composite: exclude;
+    pointer-events: none;
+    z-index: 1;
+  }
+  .glow-card::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    background: radial-gradient(
+      420px circle at var(--mx, -999px) var(--my, -999px),
+      color-mix(in oklab, var(--accent) 7%, transparent),
+      transparent 60%
+    );
+    pointer-events: none;
+    z-index: -1;
+  }
+
+  /* Gradient border that spins: a rotating layer behind the content (GPU-composited). */
+  .conic-ring {
+    position: relative;
+    overflow: hidden;
+    isolation: isolate;
+  }
+  .conic-ring::before {
+    content: "";
+    position: absolute;
+    inset: -50%;
+    z-index: -1;
+    background: conic-gradient(var(--accent), var(--accent-2), transparent 35%, transparent 65%, var(--accent));
+  }
+
+  /* Buttons: the label rolls up and a colour fill rises from below on hover. */
+  .btn {
+    position: relative;
+    isolation: isolate;
+    overflow: hidden;
+  }
+  .roll {
+    display: inline-grid;
+    overflow: hidden;
+  }
+  .roll > span {
+    grid-area: 1 / 1;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    transition: translate 0.55s var(--ease-out);
+  }
+  .roll > span + span {
+    translate: 0 110%;
+  }
+  .btn:hover .roll > span:first-child {
+    translate: 0 -110%;
+  }
+  .btn:hover .roll > span + span {
+    translate: none;
+  }
+  .btn-fill::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    background: linear-gradient(90deg, var(--accent), var(--accent-2));
+    clip-path: circle(0% at 50% 130%);
+    transition: clip-path 0.65s var(--ease-out);
+  }
+  .btn-fill-ink::before {
+    background: var(--ink);
+  }
+  .btn-fill:hover::before {
+    clip-path: circle(160% at 50% 130%);
+  }
+
+  .magnetic {
+    transition:
+      translate 0.4s var(--ease-out),
+      background-color 0.3s,
+      box-shadow 0.3s;
+  }
+
+  .marquee {
+    mask-image: linear-gradient(to right, transparent, #000 10%, #000 90%, transparent);
+  }
+  .marquee-track {
+    display: flex;
+    width: max-content;
+  }
+
+  .scroll-progress {
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: -1px;
+    height: 2px;
+    transform-origin: left;
+    transform: scaleX(0);
+    background: linear-gradient(90deg, var(--accent), var(--accent-2));
+  }
+
+  /* Word masks for SplitText: each word slides up from behind its own line. */
+  .mask {
+    display: inline-block;
+    overflow: hidden;
+    vertical-align: top;
+    padding-bottom: 0.12em;
+    margin-bottom: -0.12em;
+  }
+  .mask-inner {
+    display: inline-block;
+  }
+
+  /* Huge scroll-driven text rows. */
+  .big-row {
+    white-space: nowrap;
+    font-size: clamp(3rem, 11vw, 10rem);
+    font-weight: 600;
+    letter-spacing: -0.05em;
+    line-height: 1;
+    will-change: translate;
+  }
+  .big-row-outline {
+    color: transparent;
+    -webkit-text-stroke: 1.5px color-mix(in oklab, var(--ink) 35%, transparent);
+  }
+
+  /* Intro screen (first visit per session only; see Intro). */
+  .intro {
+    display: none;
+  }
+  html[data-intro] .intro {
+    position: fixed;
+    inset: 0;
+    z-index: 100;
+    display: grid;
+    place-items: center;
+    background: var(--ink);
+    color: var(--paper);
+    animation: intro-out 1s var(--ease-in-out) 1.5s forwards;
+  }
+  .intro-count {
+    counter-reset: n var(--n);
+  }
+  .intro-count::after {
+    content: counter(n) "%";
+  }
+
+  /* Floating site previews in the hero; they drift with the pointer (--cx/--cy). */
+  .float-card {
+    position: absolute;
+    translate: calc(var(--cx, 0) * var(--depth, 10) * 1px) calc(var(--cy, 0) * var(--depth, 10) * 1px);
+    transition: translate 0.9s var(--ease-out);
+  }
+
+  /* Footer wordmark: faint, fading downwards, cropped by the bottom edge of the page. */
+  .footer-mark-wrap {
+    height: clamp(2.4rem, 10.8vw, 9.6rem);
+    overflow: hidden;
+  }
+  .footer-name {
+    font-size: clamp(4rem, 18vw, 16rem);
+    font-weight: 600;
+    letter-spacing: -0.06em;
+    line-height: 0.8;
+    white-space: nowrap;
+    color: transparent;
+    background: linear-gradient(180deg, color-mix(in oklab, var(--on-primary) 20%, transparent), transparent 75%);
+    -webkit-background-clip: text;
+    background-clip: text;
+  }
+
+}
+
+
+@supports (animation-timeline: scroll()) {
+  .scroll-progress {
+    animation: grow-x linear both;
+    animation-timeline: scroll(root);
+  }
+}
+
+/* Contact menu (a native <dialog>). */
+.contact-menu::backdrop {
+  background: rgb(12 12 13 / 0.45);
+  backdrop-filter: blur(4px);
+}
+@media (prefers-reduced-motion: no-preference) {
+  .contact-menu[open] {
+    animation: dialog-in 0.45s var(--ease-out);
+  }
+  .contact-menu[open]::backdrop {
+    animation: fade-in 0.3s ease-out;
+  }
+}
+@media (prefers-reduced-motion: no-preference) {
+  .form-sent {
+    animation: dialog-in 0.5s var(--ease-out);
+  }
+}
+@keyframes dialog-in {
+  from {
+    opacity: 0;
+    translate: 0 24px;
+    scale: 0.96;
+  }
+}
+@keyframes fade-in {
+  from {
+    opacity: 0;
+  }
+}
+
+/* Progress bar under the pinned steps; only shown when the pinned layout is active. */
+.hscroll-bar {
+  display: none;
+  transform-origin: left;
+}
+
+/* Header slides away while scrolling down, comes back when scrolling up. */
+#site-header {
+  transition: translate 0.45s var(--ease-out);
+}
+#site-header[data-hidden]:not([data-menu]) {
+  translate: 0 -160%;
+}
+
+/* Mobile menu: a panel that wipes down, links rising one by one. */
+.mobile-menu {
+  visibility: hidden;
+  clip-path: inset(0 0 100% 0);
+}
+.mobile-menu[data-open] {
+  visibility: visible;
+  clip-path: inset(0);
+}
+@media (prefers-reduced-motion: no-preference) {
+  .mobile-menu {
+    transition:
+      clip-path 0.6s var(--ease-in-out),
+      visibility 0s 0.6s;
+  }
+  .mobile-menu[data-open] {
+    transition:
+      clip-path 0.6s var(--ease-in-out),
+      visibility 0s;
+  }
+  .mobile-menu .mask-inner {
+    translate: 0 110%;
+    transition: translate 0.7s var(--ease-out);
+  }
+  .mobile-menu[data-open] .mask-inner {
+    translate: none;
+    transition-delay: calc(0.25s + var(--w, 0) * 60ms);
+  }
+  .mobile-menu-foot {
+    opacity: 0;
+    translate: 0 12px;
+    transition:
+      opacity 0.5s,
+      translate 0.5s var(--ease-out);
+  }
+  .mobile-menu[data-open] .mobile-menu-foot {
+    opacity: 1;
+    translate: none;
+    transition-delay: 0.55s;
+  }
+}
+
+/* ---------- Motion. Everything below is skipped for people who ask for less motion. ---------- */
+@media (prefers-reduced-motion: no-preference) {
+  details[open] > .faq-answer {
+    animation: rise 0.5s var(--ease-out) both;
+  }
+
+  .rise {
+    animation: rise 0.9s var(--ease) both;
+    animation-delay: var(--intro-delay);
+  }
+  .rise-2 {
+    animation-delay: calc(var(--intro-delay) + 0.45s);
+  }
+  .rise-3 {
+    animation-delay: calc(var(--intro-delay) + 0.6s);
+  }
+  .rise-4 {
+    animation-delay: calc(var(--intro-delay) + 0.75s);
+  }
+
+  /* Intro: letters rise, the counter runs to 100, then the panel lifts away. */
+  html[data-intro] .intro .mask-inner {
+    animation: mask-up 0.9s var(--ease-out) both;
+    animation-delay: calc(var(--w, 0) * 45ms + 100ms);
+  }
+  html[data-intro] .intro-count {
+    animation: count 1.4s var(--ease-in-out) both;
+  }
+  html[data-intro] .intro-bar {
+    animation: grow-x 1.4s var(--ease-in-out) both;
+  }
+
+  /* Hero site previews: fly in after the headline, then bob gently. */
+  .float-bob {
+    animation: bob var(--bob, 7s) ease-in-out infinite alternate;
+  }
+  .float-in {
+    animation: float-in 1.4s var(--ease-out) both;
+    animation-delay: calc(var(--intro-delay) + 0.5s + var(--d, 0) * 150ms);
+  }
+
+  /* Hero code window: each line types out, the preview blocks pop in to match; 10s loop.
+     --t is when the item starts within the cycle (seconds). */
+  .type-line {
+    display: inline-block;
+    animation: type-line 10s steps(22, end) infinite both;
+    animation-delay: calc(var(--intro-delay) + 0.9s + var(--t, 0) * 1s);
+  }
+  .pop-in {
+    animation: pop-in 10s var(--ease-out) infinite both;
+    animation-delay: calc(var(--intro-delay) + 0.9s + var(--t, 0) * 1s + 0.25s);
+  }
+  .caret {
+    animation: blink 1s steps(2, start) infinite;
+  }
+
+  /* Statement words light up one by one as --p (scroll progress) grows. */
+  .scrub-word {
+    opacity: clamp(0.14, ((var(--p, 1) - 0.18) / 0.42) * var(--n) - var(--i), 1);
+    transition: opacity 0.2s linear;
+  }
+
+  .aurora::before {
+    animation: drift-a 16s ease-in-out infinite alternate;
+  }
+  .aurora::after {
+    animation: drift-b 20s ease-in-out infinite alternate;
+  }
+  .conic-ring::before {
+    animation: spin 6s linear infinite;
+  }
+  .marquee-track {
+    animation: marquee 40s linear infinite;
+  }
+  .marquee:hover .marquee-track {
+    animation-play-state: paused;
+  }
+  .pulse {
+    position: relative;
+  }
+  .pulse::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: 9999px;
+    background: inherit;
+    animation: pulse 2.4s ease-out infinite;
+  }
+
+  /* Headline words rising out of their masks on page load. --w staggers. */
+  .split-load .mask-inner {
+    animation: mask-up 1.1s var(--ease-out) both;
+    animation-delay: calc(var(--intro-delay) + var(--w, 0) * 90ms + 120ms);
+  }
+
+  /* ----- Scroll-linked values. Effects sets --p (0→1 while passing through the viewport),
+     --enter (0→1 as the top reaches the top of the screen) and --exit (0→1 as it leaves). ----- */
+  .hero-exit {
+    translate: 0 calc(var(--exit, 0) * 160px);
+    scale: calc(1 - var(--exit, 0) * 0.08);
+    opacity: calc(1 - var(--exit, 0) * 1.4);
+    transform-origin: top left;
+    will-change: translate, scale, opacity;
+  }
+  .hero-aurora {
+    scale: calc(1 + var(--exit, 0) * 0.4);
+  }
+  .hero-previews {
+    translate: 0 calc(var(--exit, 0) * -240px);
+    rotate: calc(var(--exit, 0) * 6deg);
+  }
+  .grow-in {
+    scale: calc(0.9 + 0.1 * min(1, var(--enter, 1) * 1.6));
+  }
+  .parallax-img {
+    will-change: translate;
+    scale: 1.12;
+    translate: 0 calc((var(--p, 0.5) - 0.5) * -9%);
+  }
+  .footer-name {
+    translate: 0 calc((1 - var(--in)) * 45%);
+    will-change: translate;
+  }
+  .big-row-left {
+    translate: calc(var(--p, 0.5) * -35%) 0;
+  }
+  .big-row-right {
+    translate: calc(-35% + var(--p, 0.5) * 35%) 0;
+  }
+
+  /* ----- Scroll reveals. Effects adds data-shown on entry; --d staggers.
+     Gated on scripting so content is never hidden when JavaScript doesn't run. ----- */
+  @media (scripting: enabled) {
+    [data-reveal] {
+      opacity: 0;
+      translate: 0 40px;
+      transition:
+        opacity 1s var(--ease-out),
+        translate 1.1s var(--ease-out),
+        scale 1.1s var(--ease-out),
+        clip-path 1.4s var(--ease-out);
+      transition-delay: calc(var(--d, 0) * 100ms);
+    }
+    [data-reveal="left"] {
+      translate: -60px 0;
+    }
+    [data-reveal="right"] {
+      translate: 60px 0;
+    }
+    [data-reveal="scale"] {
+      translate: none;
+      scale: 0.85;
+    }
+    [data-reveal="line"] {
+      opacity: 1;
+      translate: none;
+      scale: 0 1;
+      transform-origin: left;
+      transition-duration: 1.6s;
+    }
+    /* Wipe up like a curtain, with the content zooming out behind it. */
+    [data-reveal="image"] {
+      opacity: 1;
+      translate: none;
+      clip-path: inset(100% 0 0 0 round 1rem);
+    }
+    [data-reveal="image"] > * {
+      scale: 1.3;
+      transition: scale 1.8s var(--ease-out);
+    }
+    [data-reveal="image"][data-shown] > * {
+      scale: 1;
+    }
+    [data-reveal="image"][data-shown] {
+      clip-path: inset(0 0 0 0 round 1rem);
+    }
+    /* Headings: the container stays put, each word rises from its mask. */
+    [data-reveal="split"] {
+      opacity: 1;
+      translate: none;
+    }
+    [data-reveal="split"] .mask-inner {
+      translate: 0 110%;
+      transition: translate 1s var(--ease-out);
+      transition-delay: calc(var(--w, 0) * 70ms);
+    }
+    [data-reveal="split"][data-shown] .mask-inner {
+      translate: none;
+    }
+    [data-reveal][data-shown] {
+      opacity: 1;
+      translate: none;
+      scale: none;
+    }
+
+    /* Pinned horizontal scroll (desktop): the section is as tall as the track is wide,
+       and the track slides sideways while the section stays on screen. */
+    @media (min-width: 1024px) {
+      .hscroll {
+        height: calc(100vh + var(--hx, 0px));
+      }
+      .hscroll-sticky {
+        position: sticky;
+        top: 0;
+        height: 100vh;
+        overflow: hidden;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        padding-block: 4rem 2rem;
+      }
+      .hscroll-track {
+        display: flex;
+        gap: 1.5rem;
+        width: max-content;
+        max-width: none;
+        margin: 3rem 0 0;
+        padding-inline: max(2rem, calc((100vw - 72rem) / 2 + 2rem));
+        translate: calc(var(--ph, 0) * var(--hx, 0px) * -1) 0;
+        will-change: translate;
+      }
+      .hscroll-track > li {
+        width: 26rem;
+        flex-shrink: 0;
+      }
+      .hscroll-bar {
+        display: block;
+        scale: var(--ph, 0) 1;
+      }
+    }
+  }
+}
+
+@keyframes grow-x {
+  to {
+    transform: scaleX(1);
+  }
+}
+@keyframes rise {
+  from {
+    opacity: 0;
+    transform: translateY(14px);
+    filter: blur(6px);
+  }
+}
+@keyframes mask-up {
+  from {
+    translate: 0 110%;
+  }
+}
+@keyframes shimmer {
+  to {
+    background-position: -200% center;
+  }
+}
+@keyframes drift-a {
+  to {
+    transform: translate(14rem, 6rem) scale(1.15);
+  }
+}
+@keyframes drift-b {
+  to {
+    transform: translate(-12rem, 8rem) scale(0.9);
+  }
+}
+@keyframes spin {
+  to {
+    transform: rotate(1turn);
+  }
+}
+@keyframes marquee {
+  to {
+    transform: translateX(-50%);
+  }
+}
+/* Scroll-progress values written by Effects. Registered as non-inheriting so updating them
+   every frame only restyles the few elements that use them, not whole sections. Initial values
+   are the "fully shown" state, which is what you get without JavaScript. */
+@property --p {
+  syntax: "<number>";
+  inherits: false;
+  initial-value: 1;
+}
+@property --enter {
+  syntax: "<number>";
+  inherits: false;
+  initial-value: 1;
+}
+@property --exit {
+  syntax: "<number>";
+  inherits: false;
+  initial-value: 0;
+}
+@property --in {
+  syntax: "<number>";
+  inherits: false;
+  initial-value: 1;
+}
+@property --ph {
+  syntax: "<number>";
+  inherits: false;
+  initial-value: 0;
+}
+@property --n {
+  syntax: "<integer>";
+  inherits: false;
+  initial-value: 0;
+}
+@keyframes count {
+  from {
+    --n: 0;
+  }
+  to {
+    --n: 100;
+  }
+}
+@keyframes intro-out {
+  to {
+    clip-path: inset(0 0 100% 0);
+    visibility: hidden;
+  }
+}
+@keyframes bob {
+  to {
+    transform: translateY(-14px);
+  }
+}
+@keyframes float-in {
+  from {
+    opacity: 0;
+    translate: 0 120px;
+    scale: 0.85;
+  }
+}
+@keyframes type-line {
+  0% {
+    clip-path: inset(0 100% 0 0);
+    opacity: 1;
+  }
+  5%,
+  88% {
+    clip-path: inset(0 0 0 0);
+    opacity: 1;
+  }
+  94%,
+  100% {
+    clip-path: inset(0 0 0 0);
+    opacity: 0;
+  }
+}
+@keyframes pop-in {
+  0% {
+    opacity: 0;
+    scale: 0.85;
+    translate: 0 6px;
+  }
+  5%,
+  86% {
+    opacity: 1;
+    scale: 1;
+    translate: none;
+  }
+  93%,
+  100% {
+    opacity: 0;
+    scale: 1;
+    translate: none;
+  }
+}
+@keyframes blink {
+  to {
+    visibility: hidden;
+  }
+}
+@keyframes pulse {
+  to {
+    transform: scale(3);
+    opacity: 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+  .glow-card {
+    transform: none !important;
+  }
+  #site-header[data-hidden] {
+    translate: none;
+  }
+  .float-card {
+    translate: none;
+  }
+}
