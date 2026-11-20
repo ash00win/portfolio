@@ -66,42 +66,45 @@ function MiniSite({ phone = false }: { phone?: boolean }) {
 export function HeroVisual() {
   return (
     <div
-      className="hero-previews pointer-events-none relative hidden h-[27rem] w-full max-w-[34rem] justify-self-end xl:block"
+      className="hero-previews pointer-events-none relative mx-auto mt-14 w-full max-w-5xl sm:mt-20"
       aria-hidden
     >
-      {/* Editor + preview window */}
-      <div className="float-card top-0 right-0" style={{ "--depth": 10 } as CSSProperties}>
+      {/* Editor + preview window, tilted back; it flattens as you scroll (see .hero-showcase). */}
+      <div className="hero-showcase">
         <div className="float-in" style={{ "--d": 0 } as CSSProperties}>
-          <div className="float-bob" style={{ "--bob": "8s" } as CSSProperties}>
-            <div className="w-[31rem] overflow-hidden rounded-2xl border border-line bg-surface shadow-[0_40px_80px_-30px_rgb(12_12_13/0.35)]">
-              <div className="flex items-center gap-1.5 border-b border-line bg-paper px-3 py-2">
-                <span className="size-2 rounded-full bg-[#ff5f57]" />
-                <span className="size-2 rounded-full bg-[#febc2e]" />
-                <span className="size-2 rounded-full bg-[#28c840]" />
-                <span className="ml-3 rounded-md bg-surface px-2 py-0.5 font-mono text-[10px] text-ink shadow-sm">
-                  hero.tsx
-                </span>
-                <span className="px-2 py-0.5 font-mono text-[10px] text-muted">preview</span>
-              </div>
-              <div className="grid h-64 grid-cols-[1.15fr_1fr]">
-                <pre className="overflow-hidden border-r border-line bg-paper/60 py-3 font-mono text-[10px] leading-[1.75]">
-                  {code.map((line, i) => (
-                    <div key={i} className="flex">
-                      <span className="w-7 shrink-0 pr-2 text-right text-muted/50 select-none">{i + 1}</span>
-                      <span className="type-line whitespace-pre text-muted" style={t(at(i))}>
-                        {line.map(([text, kind], j) => (
-                          <span key={j} className={kind ? color[kind] : undefined}>
-                            {text}
-                          </span>
-                        ))}
-                        {i === code.length - 1 && <span className="caret ml-0.5 inline-block h-3 w-1.5 translate-y-0.5 bg-accent" />}
-                      </span>
-                    </div>
-                  ))}
-                </pre>
-                <div className="relative bg-surface">
-                  <MiniSite />
-                </div>
+          <div className="overflow-hidden rounded-2xl border border-line bg-surface shadow-[0_60px_120px_-50px_rgb(12_12_13/0.45)] sm:rounded-3xl">
+            <div className="flex items-center gap-1.5 border-b border-line bg-paper px-4 py-3">
+              <span className="size-2.5 rounded-full bg-[#ff5f57]" />
+              <span className="size-2.5 rounded-full bg-[#febc2e]" />
+              <span className="size-2.5 rounded-full bg-[#28c840]" />
+              <span className="ml-3 hidden rounded-md bg-surface px-2 py-0.5 font-mono text-[11px] text-ink shadow-sm md:inline">
+                hero.tsx
+              </span>
+              <span className="hidden px-2 py-0.5 font-mono text-[11px] text-muted md:inline">preview</span>
+              <span className="mx-auto rounded-md bg-surface px-3 py-0.5 font-mono text-[11px] text-muted shadow-sm md:mr-0 md:ml-auto">
+                yourbusiness.com
+              </span>
+            </div>
+            <div className="grid h-60 sm:h-80 md:grid-cols-[1.1fr_1fr]">
+              <pre className="hidden overflow-hidden border-r border-line bg-paper/60 py-5 font-mono text-[12px] leading-[1.95] md:block">
+                {code.map((line, i) => (
+                  <div key={i} className="flex">
+                    <span className="w-10 shrink-0 pr-3 text-right text-muted/50 select-none">{i + 1}</span>
+                    <span className="type-line whitespace-pre text-muted" style={t(at(i))}>
+                      {line.map(([text, kind], j) => (
+                        <span key={j} className={kind ? color[kind] : undefined}>
+                          {text}
+                        </span>
+                      ))}
+                      {i === code.length - 1 && (
+                        <span className="caret ml-0.5 inline-block h-3.5 w-1.5 translate-y-0.5 bg-accent" />
+                      )}
+                    </span>
+                  </div>
+                ))}
+              </pre>
+              <div className="relative bg-surface [zoom:1.3] sm:[zoom:1.6] md:[zoom:1.55]">
+                <MiniSite />
               </div>
             </div>
           </div>
@@ -109,11 +112,11 @@ export function HeroVisual() {
       </div>
 
       {/* Phone showing the same page */}
-      <div className="float-card bottom-0 left-2 z-10" style={{ "--depth": 24 } as CSSProperties}>
+      <div className="float-card -bottom-12 left-[2%] z-10 hidden md:block" style={{ "--depth": 24 } as CSSProperties}>
         <div className="float-in" style={{ "--d": 2 } as CSSProperties}>
           <div className="float-bob" style={{ "--bob": "6s" } as CSSProperties}>
-            <div className="h-56 w-28 overflow-hidden rounded-[1.4rem] border-[5px] border-ink bg-surface shadow-[0_30px_60px_-20px_rgb(12_12_13/0.45)]">
-              <div className="mx-auto mt-1 h-1 w-8 rounded-full bg-ink" />
+            <div className="h-64 w-32 overflow-hidden rounded-[1.6rem] border-[6px] border-ink bg-surface shadow-[0_30px_60px_-20px_rgb(12_12_13/0.45)]">
+              <div className="mx-auto mt-1 h-1 w-9 rounded-full bg-ink" />
               <MiniSite phone />
             </div>
           </div>
@@ -121,7 +124,7 @@ export function HeroVisual() {
       </div>
 
       {/* Chips */}
-      <div className="float-card -top-5 right-24 z-10" style={{ "--depth": 30 } as CSSProperties}>
+      <div className="float-card -top-5 right-[6%] z-10" style={{ "--depth": 30 } as CSSProperties}>
         <div className="float-in" style={{ "--d": 3 } as CSSProperties}>
           <p
             className="float-bob flex items-center gap-2 rounded-full bg-primary px-4 py-2 text-sm font-medium text-on-primary shadow-lg"
@@ -131,10 +134,10 @@ export function HeroVisual() {
           </p>
         </div>
       </div>
-      <div className="float-card right-6 bottom-6 z-10" style={{ "--depth": 18 } as CSSProperties}>
+      <div className="float-card right-[8%] -bottom-5 z-10 hidden sm:block" style={{ "--depth": 18 } as CSSProperties}>
         <div className="float-in" style={{ "--d": 4 } as CSSProperties}>
           <p className="float-bob flex items-center gap-2 rounded-full border border-line bg-surface px-4 py-2 text-sm font-medium shadow-lg">
-            <Check className="size-4 text-accent" /> Mobile-first · EN + عربي
+            <Check className="size-4 text-accent" /> Mobile-first · SEO-ready
           </p>
         </div>
       </div>

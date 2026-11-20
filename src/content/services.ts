@@ -1,5 +1,5 @@
 import type { LucideIcon } from "lucide-react";
-import { Code2, Gauge, Languages, LayoutTemplate, Rocket, Wrench } from "lucide-react";
+import { Code2, Gauge, LayoutTemplate, RefreshCw, Rocket, Wrench } from "lucide-react";
 
 export type Service = {
   title: string;
@@ -27,10 +27,10 @@ export const services: Service[] = [
     icon: Rocket,
   },
   {
-    title: "Bilingual & RTL sites",
+    title: "Website redesigns",
     description:
-      "English with Arabic (right to left) or other languages, with fonts that load only the characters each page uses.",
-    icon: Languages,
+      "Give an outdated or slow site a modern look, faster pages and clearer calls to action, without losing what already works.",
+    icon: RefreshCw,
   },
   {
     title: "Speed & SEO basics",

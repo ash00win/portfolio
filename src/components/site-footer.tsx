@@ -1,6 +1,7 @@
 import { ArrowRight, ArrowUp } from "lucide-react";
 import Link from "next/link";
 import { mailto, profile } from "@/content/profile";
+import { HomeLink } from "./home-link";
 import { ButtonLink, Container } from "./ui";
 
 const sitemap = [
@@ -23,7 +24,7 @@ export function SiteFooter() {
     { href: profile.linkedin, label: "LinkedIn" },
     ...(profile.github ? [{ href: profile.github, label: "GitHub" }] : []),
   ];
-  const linkClass = "text-on-primary/70 transition-colors hover:text-on-primary";
+  const linkClass = "inline-block py-1.5 text-on-primary/70 transition-colors hover:text-on-primary";
 
   return (
     <footer className="relative overflow-hidden bg-primary text-sm text-on-primary">
@@ -31,15 +32,15 @@ export function SiteFooter() {
       <Container className="relative pt-16">
         <div className="grid grid-cols-2 gap-x-6 gap-y-12 md:grid-cols-12">
           <div className="col-span-2 md:col-span-6">
-            <Link href="/" className="inline-flex items-center gap-3 text-base font-semibold tracking-tight">
+            <HomeLink className="inline-flex items-center gap-3 text-base font-semibold tracking-tight">
               <span
-                className="grid size-10 place-items-center rounded-full bg-gradient-to-br from-accent to-accent-2 text-xs font-bold"
+                className="grid size-10 place-items-center rounded-full bg-on-primary text-xs font-bold text-ink"
                 aria-hidden
               >
                 {initials}
               </span>
               {profile.name}
-            </Link>
+            </HomeLink>
             <p className="mt-5 max-w-sm text-base leading-relaxed text-on-primary/70">
               Fast, mobile-first websites for businesses and agencies. Based in {profile.location}, working worldwide.
             </p>
@@ -51,7 +52,7 @@ export function SiteFooter() {
 
           <nav aria-label="Footer" className="md:col-span-2">
             <p className="font-mono text-xs tracking-wider text-on-primary/50 uppercase">Sitemap</p>
-            <ul className="mt-4 space-y-2.5">
+            <ul className="mt-3 space-y-1">
               {sitemap.map((item) => (
                 <li key={item.href}>
                   <Link href={item.href} className={linkClass}>
@@ -64,7 +65,7 @@ export function SiteFooter() {
 
           <div className="md:col-span-4">
             <p className="font-mono text-xs tracking-wider text-on-primary/50 uppercase">Connect</p>
-            <ul className="mt-4 space-y-2.5">
+            <ul className="mt-3 space-y-1">
               {connect.map((item) => (
                 <li key={item.label}>
                   <a href={item.href} className={linkClass}>
@@ -83,7 +84,7 @@ export function SiteFooter() {
         </div>
 
         {/* Bottom bar: copyright and a round back-to-top button, small uppercase mono. */}
-        <div className="mt-14 grid items-center gap-4 border-t border-on-primary/10 py-6 font-mono text-[11px] tracking-[0.14em] text-on-primary/50 uppercase sm:grid-cols-2">
+        <div className="mt-14 grid items-center gap-4 border-t border-on-primary/10 py-6 font-mono text-xs tracking-[0.14em] text-on-primary/50 uppercase sm:grid-cols-2">
           <p>
             © {new Date().getFullYear()} {profile.name}
           </p>

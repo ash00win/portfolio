@@ -8,23 +8,23 @@ import { type FormEvent, type ReactNode, useState } from "react";
  * no server needed. Spam: a hidden "botcheck" box that bots tick and Web3Forms rejects.
  */
 const KINDS = ["Business", "Agency", "Other"];
-const TYPES = ["New website", "Landing page", "Design to code", "Something else"];
+const TYPES = ["New website", "Fix or redesign", "Landing page", "Design to code", "Something else"];
 const TIMELINES = ["As soon as possible", "In 1–2 months", "Just exploring"];
 
 type Status = "idle" | "sending" | "sent" | "error";
 
 const field =
-  "w-full rounded-xl border border-line bg-paper px-4 py-3 text-sm text-ink placeholder:text-muted/70 transition-[border-color,box-shadow] outline-none focus:border-accent focus:ring-4 focus:ring-accent/10";
+  "w-full rounded-xl border border-line bg-paper px-3.5 py-2.5 text-sm text-ink placeholder:text-muted/70 transition-[border-color,box-shadow] outline-none focus:border-accent focus:bg-surface focus:ring-4 focus:ring-accent/10";
 
 function Pills({ name, legend, options }: { name: string; legend: string; options: string[] }) {
   return (
     <fieldset>
       <legend className="text-sm font-medium">{legend}</legend>
-      <div className="mt-2 flex flex-wrap gap-2">
+      <div className="mt-2 flex flex-wrap gap-1.5">
         {options.map((o, i) => (
           <label
             key={o}
-            className="cursor-pointer rounded-full border border-line bg-paper px-3.5 py-1.5 text-sm transition-colors select-none hover:border-ink/40 has-checked:border-ink has-checked:bg-ink has-checked:text-paper has-focus-visible:ring-4 has-focus-visible:ring-accent/20"
+            className="cursor-pointer rounded-full border border-line bg-paper px-3.5 py-2 text-[13px] leading-5 sm:px-3 sm:py-1 transition-colors select-none hover:border-ink/40 has-checked:border-ink has-checked:bg-ink has-checked:text-paper has-focus-visible:ring-4 has-focus-visible:ring-accent/20"
           >
             <input type="radio" name={name} value={o} defaultChecked={i === 0} className="sr-only" />
             {o}
@@ -37,7 +37,7 @@ function Pills({ name, legend, options }: { name: string; legend: string; option
 
 function Label({ htmlFor, children }: { htmlFor: string; children: ReactNode }) {
   return (
-    <label htmlFor={htmlFor} className="text-sm font-medium">
+    <label htmlFor={htmlFor} className="flex items-center justify-between gap-2 text-sm font-medium">
       {children}
     </label>
   );
@@ -65,6 +65,7 @@ export function ContactForm({ accessKey, email }: { accessKey: string; email: st
           from_name: "Portfolio contact form",
           name: data.name,
           email: data.email,
+          "WhatsApp / phone": data.phone || "-",
           "I'm a": data.kind,
           Project: data.type,
           Timeline: data.timeline,
@@ -105,9 +106,9 @@ export function ContactForm({ accessKey, email }: { accessKey: string; email: st
   return (
     <form
       onSubmit={onSubmit}
-      className="grid gap-5 rounded-2xl border border-line bg-surface p-6 text-left shadow-sm sm:p-8"
+      className="grid gap-4 rounded-2xl border border-line bg-surface p-5 text-left shadow-sm sm:p-7"
     >
-      <div className="grid gap-5 sm:grid-cols-2">
+      <div className="grid gap-4 sm:grid-cols-2">
         <div className="grid gap-2">
           <Label htmlFor="cf-name">Your name</Label>
           <input id="cf-name" name="name" required autoComplete="name" placeholder="Jane Smith" className={field} />
@@ -126,6 +127,21 @@ export function ContactForm({ accessKey, email }: { accessKey: string; email: st
         </div>
       </div>
 
+      <div className="grid gap-2">
+        <Label htmlFor="cf-phone">
+          WhatsApp or phone
+          <span className="rounded-full bg-tint px-2 py-0.5 text-xs font-normal text-muted">Optional</span>
+        </Label>
+        <input
+          id="cf-phone"
+          name="phone"
+          type="tel"
+          autoComplete="tel"
+          placeholder="With country code, e.g. +971 50 123 4567"
+          className={field}
+        />
+      </div>
+
       <Pills name="kind" legend="I'm a" options={KINDS} />
       <Pills name="type" legend="Project" options={TYPES} />
       <Pills name="timeline" legend="Timeline" options={TIMELINES} />
@@ -136,7 +152,7 @@ export function ContactForm({ accessKey, email }: { accessKey: string; email: st
           id="cf-message"
           name="message"
           required
-          rows={4}
+          rows={3}
           placeholder="What does your business do, what should the site include, any links or designs…"
           className={`${field} resize-y`}
         />
@@ -145,11 +161,11 @@ export function ContactForm({ accessKey, email }: { accessKey: string; email: st
       {/* Honeypot for bots; hidden from people and screen readers. */}
       <input type="checkbox" name="botcheck" className="hidden" tabIndex={-1} aria-hidden />
 
-      <div className="flex flex-wrap items-center gap-4">
+      <div className="mt-1 flex flex-wrap items-center justify-between gap-3 border-t border-line pt-4">
         <button
           type="submit"
           disabled={status === "sending"}
-          className="btn btn-fill inline-flex items-center gap-2 rounded-full bg-primary px-6 py-3 text-sm font-medium text-on-primary transition-shadow hover:shadow-[0_10px_30px_-8px_color-mix(in_oklab,var(--accent)_60%,transparent)] disabled:opacity-70"
+          className="btn btn-fill inline-flex items-center gap-2 rounded-full bg-primary px-5 py-2.5 text-sm font-medium text-on-primary transition-shadow hover:shadow-[0_10px_30px_-8px_color-mix(in_oklab,var(--accent)_60%,transparent)] disabled:opacity-70"
         >
           {status === "sending" ? (
             <>
@@ -161,7 +177,9 @@ export function ContactForm({ accessKey, email }: { accessKey: string; email: st
             </>
           )}
         </button>
-        <p className="text-xs text-muted">Replies within one working day.</p>
+        <p className="inline-flex items-center gap-1.5 text-xs text-muted">
+          <span className="size-1.5 rounded-full bg-accent" aria-hidden /> Replies within one working day
+        </p>
       </div>
 
       {status === "error" && (

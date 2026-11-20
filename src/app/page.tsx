@@ -24,8 +24,15 @@ const d = (i: number) => ({ "--d": i }) as CSSProperties;
 const bigWords = ["Mobile-first", "Pixel-accurate", "Fast by default", "Search-ready", "Built to convert"];
 const bigRow = (words: string[]) => [...words, ...words].join("  ·  ");
 
-const values = ["Pixel-accurate", "Mobile-first", "Clear updates", "Tested before handover"];
 const toolbox = ["React", "Next.js", "Tailwind CSS", "JavaScript", "Node.js", "Django", "PostgreSQL", "Git"];
+
+const heroPoints = ["Fixed quotes", "Replies within a day", "Mobile-first and search-ready"];
+
+const nextSteps = [
+  { title: "I reply within one working day", text: "With a few questions, or a quick call if it's easier." },
+  { title: "You get a fixed quote", text: "A clear price and timeline, agreed before any work starts." },
+  { title: "We start building", text: "You'll see a live preview link early and get regular updates." },
+];
 
 const checkIcon = (
   <span className="mt-0.5 grid size-5 shrink-0 place-items-center rounded-full bg-accent/15">
@@ -85,39 +92,40 @@ export default function Home() {
         <div className="bg-grid pointer-events-none absolute inset-0" aria-hidden />
         <div className="spotlight-layer" aria-hidden />
 
-        {/* Two columns on wide screens: copy on the left, the animated build on the right. */}
-        <div className="relative mx-auto grid w-full max-w-6xl items-center gap-12 px-4 pt-36 pb-16 sm:px-6 sm:pt-48 sm:pb-24 lg:px-8 xl:grid-cols-[1.1fr_1fr] xl:pt-44">
-          <div className="hero-exit relative z-10">
-            <p className="rise inline-flex items-center gap-2.5 rounded-full border border-line bg-surface/80 px-3 py-1.5 text-sm text-muted">
+        {/* Centred hero: status, headline, intro, actions and trust points; the showcase below tilts into place. */}
+        <div className="relative mx-auto w-full max-w-6xl px-4 pt-36 pb-16 sm:px-6 sm:pt-44 sm:pb-24 lg:px-8">
+          <div className="hero-exit relative z-10 mx-auto flex max-w-4xl flex-col items-center text-center">
+            <p className="rise inline-flex items-center gap-2.5 rounded-full border border-line bg-surface/80 px-3 py-1.5 text-sm text-muted shadow-sm">
               <span className="pulse size-2 rounded-full bg-accent" aria-hidden />
               {profile.status}
             </p>
-            <h1 className="split-load mt-8 max-w-4xl text-5xl leading-[1.02] font-semibold tracking-tighter sm:text-7xl lg:text-8xl xl:text-[4.75rem]">
+            <h1 className="split-load mt-8 text-5xl leading-[1.02] font-semibold tracking-tighter sm:text-7xl lg:text-[5.5rem]">
               <span className="sr-only">{profile.name}, freelance web developer. </span>
               <SplitText text="Sharp websites," />
               <br />
               <SplitText text="built to perform." start={2} innerClassName="text-gradient pr-1" />
             </h1>
-            <p className="rise rise-2 mt-8 max-w-2xl text-lg leading-relaxed text-muted sm:text-xl xl:max-w-xl">{profile.intro}</p>
-            <div className="rise rise-3 mt-10 flex flex-wrap gap-3">
+            <p className="rise rise-2 mt-7 max-w-2xl text-lg leading-relaxed text-muted sm:text-xl">{profile.intro}</p>
+            <div className="rise rise-3 mt-9 flex flex-wrap justify-center gap-3">
               <ButtonLink href={mailto("Website project")} className="magnetic">
                 Start a project <ArrowRight className="size-4" aria-hidden />
               </ButtonLink>
               <ButtonLink href="#work" variant="secondary" className="magnetic">
                 See my work <ArrowRight className="size-4" aria-hidden />
               </ButtonLink>
+              {whatsapp && (
+                <ButtonLink href={whatsapp} variant="ghost" className="magnetic">
+                  <MessageCircle className="size-4" aria-hidden /> WhatsApp me
+                </ButtonLink>
+              )}
             </div>
-
-            <dl className="rise rise-4 mt-16 inline-grid grid-cols-3 divide-x divide-line rounded-2xl border border-line bg-surface/85">
-              {profile.stats.map((s) => (
-                <div key={s.label} className="flex flex-col-reverse px-3.5 py-4 sm:px-7 sm:py-5">
-                  <dt className="mt-1 max-w-32 text-xs leading-snug text-muted sm:text-sm">{s.label}</dt>
-                  <dd data-count className="text-xl font-semibold tracking-tight whitespace-nowrap tabular-nums sm:text-4xl">
-                    {s.value}
-                  </dd>
-                </div>
+            <ul className="rise rise-4 mt-8 flex flex-col items-center gap-2 text-sm text-muted sm:flex-row sm:flex-wrap sm:justify-center sm:gap-x-6">
+              {heroPoints.map((point) => (
+                <li key={point} className="inline-flex items-center gap-1.5">
+                  <Check className="size-4 text-accent" aria-hidden /> {point}
+                </li>
               ))}
-            </dl>
+            </ul>
           </div>
 
           <HeroVisual />
@@ -204,6 +212,14 @@ export default function Home() {
                   </div>
                   <div className="lg:col-span-5" data-reveal="right" style={d(2)}>
                     <p className="leading-relaxed text-muted">{study.summary}</p>
+                    {study.testimonial && (
+                      <blockquote className="mt-5 border-l-2 border-accent pl-4">
+                        <p className="leading-relaxed">&ldquo;{study.testimonial.quote}&rdquo;</p>
+                        <footer className="mt-2 text-sm text-muted">
+                          {study.testimonial.name}, {study.testimonial.role}
+                        </footer>
+                      </blockquote>
+                    )}
                     <ul className="mt-5 flex flex-wrap gap-2">
                       {study.highlights.map((h) => (
                         <li key={h}>
@@ -241,15 +257,16 @@ export default function Home() {
         </div>
         <ul className="mt-10 grid gap-4 sm:mt-12 sm:grid-cols-2 lg:grid-cols-3">
           {services.map(({ title, description, icon: Icon }, i) => (
-            <li key={title} data-reveal style={d(i % 3)} className="group tilt glow-card flex flex-col rounded-2xl p-7">
-              <div className="flex items-start justify-between">
-                <span className="grid size-11 place-items-center rounded-xl border border-line bg-tint text-accent transition-transform duration-500 group-hover:scale-110 group-hover:-rotate-6">
+            <li key={title} data-reveal style={d(i % 3)} className="group tilt glow-card flex flex-col rounded-2xl p-5 sm:p-7">
+              <div className="flex items-center gap-3 sm:items-start sm:justify-between">
+                <span className="grid size-10 shrink-0 place-items-center rounded-xl border border-line bg-tint text-accent transition-transform duration-500 group-hover:scale-110 group-hover:-rotate-6 sm:size-11">
                   <Icon className="size-5" aria-hidden />
                 </span>
-                <span className="font-mono text-xs text-muted">{String(i + 1).padStart(2, "0")}</span>
+                <h3 className="text-lg font-semibold tracking-tight sm:hidden">{title}</h3>
+                <span className="ml-auto font-mono text-xs text-muted">{String(i + 1).padStart(2, "0")}</span>
               </div>
-              <h3 className="mt-8 text-lg font-semibold tracking-tight">{title}</h3>
-              <p className="mt-2 leading-relaxed text-muted">{description}</p>
+              <h3 className="mt-8 hidden text-lg font-semibold tracking-tight sm:block">{title}</h3>
+              <p className="mt-3 leading-relaxed text-muted sm:mt-2">{description}</p>
               <span
                 className="absolute inset-x-7 bottom-0 h-0.5 origin-left scale-x-0 rounded-full bg-gradient-to-r from-accent to-accent-2 transition-transform duration-500 group-hover:scale-x-100"
                 aria-hidden
@@ -268,7 +285,7 @@ export default function Home() {
               <div
                 key={a.eyebrow}
                 data-reveal={dark ? "right" : "left"}
-                className={`spotlight relative flex flex-col overflow-hidden rounded-3xl border p-8 sm:p-10 ${
+                className={`spotlight relative flex flex-col overflow-hidden rounded-3xl border p-6 sm:p-10 ${
                   dark ? "border-transparent bg-primary text-on-primary" : "border-line bg-surface"
                 }`}
               >
@@ -329,11 +346,11 @@ export default function Home() {
             className="hscroll-track mx-auto mt-12 grid max-w-6xl gap-4 px-4 sm:px-6 md:grid-cols-2 lg:px-8"
           >
             {steps.map((step, i) => (
-              <li key={step.title} data-reveal style={d(i)} className="tilt glow-card flex flex-col rounded-3xl p-8">
-                <span className="text-gradient text-7xl font-semibold tracking-tighter">
+              <li key={step.title} data-reveal style={d(i)} className="tilt glow-card flex flex-col rounded-3xl p-6 sm:p-8">
+                <span className="text-gradient text-5xl font-semibold tracking-tighter sm:text-7xl">
                   {String(i + 1).padStart(2, "0")}
                 </span>
-                <h3 className="mt-10 text-2xl font-semibold tracking-tight">{step.title}</h3>
+                <h3 className="mt-5 text-xl font-semibold tracking-tight sm:mt-10 sm:text-2xl">{step.title}</h3>
                 <p className="mt-3 leading-relaxed text-muted">{step.description}</p>
               </li>
             ))}
@@ -349,7 +366,7 @@ export default function Home() {
       {/* QA checklist + skills */}
       <section className="bg-surface pb-16 sm:pb-24 lg:pt-4">
         <Container className="grid gap-4 lg:grid-cols-2">
-          <div data-reveal="left" className="tilt glow-card rounded-2xl p-7 sm:p-9">
+          <div data-reveal="left" className="tilt glow-card rounded-2xl p-6 sm:p-9">
             <h3 className="text-xl font-semibold tracking-tight">Every site ships with</h3>
             <p className="mt-1 text-muted">The checklist I run before you see anything.</p>
             <ul className="mt-6 space-y-3">
@@ -361,7 +378,7 @@ export default function Home() {
               ))}
             </ul>
           </div>
-          <div data-reveal="right" className="tilt glow-card rounded-2xl p-7 sm:p-9">
+          <div data-reveal="right" className="tilt glow-card rounded-2xl p-6 sm:p-9">
             <h3 className="text-xl font-semibold tracking-tight">Skills & tools</h3>
             <p className="mt-1 text-muted">What I&apos;ve used in real, shipped projects.</p>
             <dl className="mt-6 space-y-5">
@@ -409,92 +426,70 @@ export default function Home() {
         </ul>
       </Section>
 
-      {/* About: an image-free bento of cards. */}
+      {/* About: minimal two columns. Left: who + key facts (sticky on desktop). Right: story, experience, tools. */}
       <section id="about" className="border-t border-line bg-surface py-16 sm:py-24">
-        <Container>
-          <ul className="grid gap-4 lg:grid-cols-3">
-            <li
-              data-reveal="left"
-              className="spotlight relative overflow-hidden rounded-3xl border border-line bg-paper p-8 sm:p-10 lg:col-span-2"
-            >
-              <div className="aurora opacity-50" aria-hidden />
-              <div className="spotlight-layer" aria-hidden />
-              <div className="relative">
+        <Container className="grid gap-12 lg:grid-cols-12 lg:gap-16">
+          <div className="lg:col-span-5">
+            <div className="lg:sticky lg:top-28">
+              <div data-reveal>
                 <Eyebrow>About</Eyebrow>
-                <h2
-                  data-reveal="split"
-                  className="mt-4 text-4xl leading-tight font-semibold tracking-tighter sm:text-6xl"
-                >
-                  <SplitText text="Hi, I'm" />{" "}
-                  <SplitText text={`${profile.name.split(" ")[0]}.`} start={2} innerClassName="text-gradient pr-1" />
-                </h2>
-                <div className="mt-6 max-w-2xl space-y-4 text-lg leading-relaxed text-muted">
-                  {profile.about.map((p) => (
-                    <p key={p}>{p}</p>
-                  ))}
-                </div>
-                <ul className="mt-8 flex flex-wrap gap-2">
-                  {values.map((v) => (
-                    <li
-                      key={v}
-                      className="inline-flex items-center gap-2 rounded-full border border-line bg-surface px-3.5 py-1.5 text-sm font-medium"
-                    >
-                      <Check className="size-3.5 text-accent" aria-hidden /> {v}
-                    </li>
-                  ))}
-                </ul>
               </div>
-            </li>
+              <h2
+                data-reveal="split"
+                className="mt-4 text-4xl leading-tight font-semibold tracking-tighter sm:text-6xl"
+              >
+                <SplitText text="Hi, I'm" />{" "}
+                <SplitText text={`${profile.name.split(" ")[0]}.`} start={2} innerClassName="text-gradient pr-1" />
+              </h2>
+              <dl data-reveal style={d(1)} className="mt-10 border-t border-line">
+                {profile.facts.map((f) => (
+                  <div key={f.label} className="flex items-baseline justify-between gap-6 border-b border-line py-3.5">
+                    <dt className="font-mono text-xs tracking-wider text-muted uppercase">{f.label}</dt>
+                    <dd className="text-right font-medium">{f.value}</dd>
+                  </div>
+                ))}
+              </dl>
+            </div>
+          </div>
 
-            <li data-reveal="right" className="tilt glow-card flex flex-col rounded-3xl p-7">
-              <p className="font-mono text-xs tracking-wider text-muted uppercase">Currently</p>
-              <p className="mt-4 text-xl font-semibold tracking-tight">{timeline[0].title}</p>
-              <p className="mt-2 leading-relaxed text-muted">
-                Shipping features for a live college ERP by day, and building websites for clients alongside.
-              </p>
-              <div className="group mt-6">
-                <ProjectArt kind="erp" />
-              </div>
-              <p className="mt-auto inline-flex items-center gap-2 pt-5 text-sm font-medium text-accent">
-                <span className="pulse size-2 rounded-full bg-accent" aria-hidden /> Open to new projects
-              </p>
-            </li>
+          <div className="lg:col-span-7">
+            <div className="space-y-5 text-lg leading-relaxed text-muted">
+              {profile.about.map((p, i) => (
+                <p key={p} data-reveal style={d(i)} className={i === 0 ? "text-xl text-ink sm:text-2xl sm:leading-snug" : ""}>
+                  {p}
+                </p>
+              ))}
+            </div>
 
-            <li data-reveal style={d(1)} className="glow-card rounded-3xl p-7 sm:p-9 lg:col-span-2">
-              <p className="font-mono text-xs tracking-wider text-muted uppercase">Experience</p>
-              <ol className="mt-4">
-                {timeline.map((t, i) => (
+            <div data-reveal className="mt-14">
+              <Eyebrow>Experience</Eyebrow>
+              <ol className="mt-4 border-t border-line">
+                {timeline.map((t) => (
                   <li
                     key={t.title}
-                    className={`group grid gap-1 py-4 sm:grid-cols-[9.5rem_1fr] sm:gap-6 ${i > 0 ? "border-t border-line" : ""}`}
+                    className="group grid gap-1 border-b border-line py-5 sm:grid-cols-[9rem_1fr] sm:gap-6"
                   >
                     <span className="font-mono text-xs leading-6 text-muted">{t.when}</span>
                     <div>
-                      <p className="font-semibold tracking-tight transition-colors group-hover:text-accent">
-                        {t.title} <span className="font-normal text-muted">· {t.org}</span>
-                      </p>
-                      {t.description && <p className="mt-1 text-sm text-muted">{t.description}</p>}
+                      <p className="font-semibold tracking-tight transition-colors group-hover:text-accent">{t.title}</p>
+                      <p className="text-sm text-muted">{t.org}</p>
                     </div>
                   </li>
                 ))}
               </ol>
-            </li>
+            </div>
 
-            <li data-reveal style={d(2)} className="tilt glow-card flex flex-col rounded-3xl p-7">
-              <p className="font-mono text-xs tracking-wider text-muted uppercase">Toolbox</p>
-              <ul className="mt-5 grid flex-1 auto-rows-fr grid-cols-2 gap-2">
-                {toolbox.map((tool, i) => (
-                  <li
-                    key={tool}
-                    className="flex flex-col justify-between gap-3 rounded-xl border border-line bg-paper p-3 text-sm font-medium transition-[translate,border-color,color] duration-300 hover:-translate-y-0.5 hover:border-accent/50 hover:text-accent"
-                  >
-                    {tool}
-                    <span className="self-end font-mono text-[10px] text-muted">{String(i + 1).padStart(2, "0")}</span>
+            <div data-reveal className="mt-12">
+              <Eyebrow>Tools I use</Eyebrow>
+              <ul className="mt-4 flex flex-wrap gap-2">
+                {toolbox.map((tool) => (
+                  <li key={tool}>
+                    <Tag>{tool}</Tag>
                   </li>
                 ))}
               </ul>
-            </li>
-          </ul>
+            </div>
+          </div>
         </Container>
       </section>
 
@@ -512,7 +507,7 @@ export default function Home() {
                 style={d(i)}
                 className="group border-b border-line py-5 first:border-t [&_summary::-webkit-details-marker]:hidden"
               >
-                <summary className="flex cursor-pointer list-none items-center justify-between gap-6 text-lg font-medium tracking-tight transition-colors hover:text-accent">
+                <summary className="-my-2 flex min-h-12 cursor-pointer list-none items-center justify-between gap-6 py-2 text-base font-medium tracking-tight transition-colors hover:text-accent sm:text-lg">
                   {f.q}
                   <span className="grid size-8 shrink-0 place-items-center rounded-full border border-line transition-transform duration-300 group-open:rotate-45 group-open:border-accent group-open:text-accent">
                     <Plus className="size-4" aria-hidden />
@@ -535,7 +530,7 @@ export default function Home() {
             <div className="aurora" aria-hidden />
             <div className="bg-grid pointer-events-none absolute inset-0" aria-hidden />
             <div className="spotlight-layer" aria-hidden />
-            <div className="relative grid gap-10 px-6 py-12 sm:px-10 sm:py-16 lg:grid-cols-[0.9fr_1.1fr] lg:gap-14 lg:px-14">
+            <div className="relative grid gap-10 px-4 py-10 sm:px-10 sm:py-16 lg:grid-cols-[0.9fr_1.1fr] lg:gap-14 lg:px-14">
               <div className="flex flex-col">
                 <Eyebrow>Contact</Eyebrow>
                 <h2
@@ -546,9 +541,31 @@ export default function Home() {
                   <SplitText text="Let's build it." start={5} innerClassName="text-gradient" />
                 </h2>
                 <p className="mt-5 max-w-md text-lg leading-relaxed text-muted">
-                  Tell me about your business or send the designs, and I&apos;ll come back with a fixed quote. I take on
-                  a small number of part-time projects at a time.
+                  Share a few details about your business or send over your designs. I&apos;ll reply within one working
+                  day with a clear, fixed quote and timeline. I take on a limited number of projects at a time, so
+                  yours gets my full attention.
                 </p>
+
+                {/* What happens after sending: fills the column and answers "then what?". */}
+                <div className="mt-10">
+                  <p className="font-mono text-xs tracking-wider text-muted uppercase">What happens next</p>
+                  <ol className="mt-5 space-y-5">
+                    {nextSteps.map((step, i) => (
+                      <li
+                        key={step.title}
+                        className="relative flex gap-4 not-last:after:absolute not-last:after:top-9 not-last:after:-bottom-4 not-last:after:left-3.75 not-last:after:w-px not-last:after:bg-line"
+                      >
+                        <span className="relative grid size-8 shrink-0 place-items-center rounded-full border border-line bg-surface font-mono text-xs font-medium shadow-sm">
+                          {i + 1}
+                        </span>
+                        <div className="pt-1">
+                          <p className="font-medium tracking-tight">{step.title}</p>
+                          <p className="mt-0.5 text-sm leading-relaxed text-muted">{step.text}</p>
+                        </div>
+                      </li>
+                    ))}
+                  </ol>
+                </div>
 
                 <div className="mt-10 lg:mt-auto lg:pt-10">
                   <p className="font-mono text-xs tracking-wider text-muted uppercase">Prefer email?</p>
@@ -570,11 +587,6 @@ export default function Home() {
                     <ButtonLink href={profile.linkedin} variant="secondary" className="magnetic">
                       LinkedIn <ArrowUpRight className="size-4" aria-hidden />
                     </ButtonLink>
-                    {profile.github && (
-                      <ButtonLink href={profile.github} variant="secondary" className="magnetic">
-                        GitHub <ArrowUpRight className="size-4" aria-hidden />
-                      </ButtonLink>
-                    )}
                   </div>
                 </div>
               </div>

@@ -7,14 +7,14 @@ export const profile = {
   location: "Thrissur, Kerala",
 
   // The small pill above the headline. Keep it current.
-  status: "Booking part-time website projects",
+  status: "Available for new website projects",
 
   email: "ashwinjoy012@gmail.com",
   linkedin: "https://www.linkedin.com/in/iamashwinjoy/",
   github: "https://github.com/ash00win", // Optional. Leave empty to hide.
   // Optional WhatsApp number in international format, digits only, e.g. "919900000000".
   // Many small-business clients prefer it to email. Empty hides the button.
-  whatsapp: "",
+  whatsapp: "919995757922",
 
   // Web3Forms access key for the contact form (free: web3forms.com, sends to your Gmail).
   // It's designed to be public, so it's safe in the site's code.
@@ -36,7 +36,6 @@ export const profile = {
       "React developer",
       "Next.js developer",
       "Figma to code",
-      "bilingual Arabic English website",
       "small business website",
     ],
   },
@@ -44,17 +43,18 @@ export const profile = {
   intro:
     "I'm Ashwin, a web developer in Kerala. I design and build fast, mobile-first websites for businesses, and turn agency designs into clean, production-ready code.",
 
-  // Real, checkable numbers only.
-  stats: [
-    { value: "1+ yr", label: "building for the web" },
-    { value: "EN + AR", label: "bilingual client site live" },
-    { value: "2,400+", label: "automated tests written" },
-  ],
 
   about: [
-    "I'm a Computer Science graduate (2025) from Thrissur, Kerala. I started building for the web during my internship at Techolas Technologies and have been shipping production code ever since.",
-    "By day I'm a junior software developer on a live ERP that a whole college uses every day. That's where I learned to own work end to end, test properly and ship things people rely on.",
-    "Alongside it I build websites for businesses, like a bilingual English and Arabic site for a printing company in Muscat. I care about the details visitors notice: how fast it loads, how it feels on a phone, and how easy it is to get in touch.",
+    "I'm a web developer from Thrissur, Kerala. I build fast, mobile-first websites for businesses, and turn agency designs into clean, working code.",
+    "By day I'm a junior software developer on a live ERP used by a whole college, where I learned to own work end to end and test it properly. Alongside it I take on part-time website projects, like a website for a printing company in Muscat.",
+  ],
+
+  // Short facts shown beside the About text.
+  facts: [
+    { label: "Based in", value: "Thrissur, Kerala" },
+    { label: "Currently", value: "Junior Software Developer" },
+    { label: "Freelance", value: "Part-time website projects" },
+    { label: "Education", value: "B.Tech, Computer Science (2025)" },
   ],
 
   // Scrolls along the bottom of the hero.
@@ -67,7 +67,6 @@ export const profile = {
     "Vite",
     "Framer Motion",
     "Responsive design",
-    "Right-to-left (Arabic)",
     "SEO",
     "Google Analytics 4",
     "Node.js",

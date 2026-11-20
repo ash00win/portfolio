@@ -52,7 +52,7 @@ export function SectionHeading({
 }
 
 const buttonBase =
-  "btn inline-flex items-center justify-center rounded-full px-5 py-2.5 text-sm font-medium transition-[color,background-color,border-color,box-shadow,translate] duration-300";
+  "btn inline-flex items-center justify-center rounded-full px-5 py-2.5 text-sm font-medium whitespace-nowrap transition-[color,background-color,border-color,box-shadow,translate] duration-300";
 const buttonVariants = {
   primary:
     "btn-fill bg-primary text-on-primary hover:shadow-[0_10px_30px_-8px_color-mix(in_oklab,var(--accent)_60%,transparent)]",

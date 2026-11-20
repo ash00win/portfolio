@@ -522,15 +522,17 @@ body {
     translate: 0 calc(var(--exit, 0) * 160px);
     scale: calc(1 - var(--exit, 0) * 0.08);
     opacity: calc(1 - var(--exit, 0) * 1.4);
-    transform-origin: top left;
+    transform-origin: top center;
     will-change: translate, scale, opacity;
   }
   .hero-aurora {
     scale: calc(1 + var(--exit, 0) * 0.4);
   }
-  .hero-previews {
-    translate: 0 calc(var(--exit, 0) * -240px);
-    rotate: calc(var(--exit, 0) * 6deg);
+  /* Hero showcase: tilted back at rest, flat after ~a quarter of the hero has scrolled by. */
+  .hero-showcase {
+    transform: perspective(1600px) rotateX(calc(16deg - min(var(--exit) * 64deg, 16deg)));
+    transform-origin: 50% 0%;
+    will-change: transform;
   }
   .grow-in {
     scale: calc(0.9 + 0.1 * min(1, var(--enter, 1) * 1.6));

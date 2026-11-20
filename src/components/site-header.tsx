@@ -5,6 +5,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { type CSSProperties, useEffect, useRef, useState } from "react";
 import { mailto, profile } from "@/content/profile";
+import { HomeLink } from "./home-link";
 import { ButtonLink } from "./ui";
 
 const nav = [
@@ -12,6 +13,7 @@ const nav = [
   { id: "services", label: "Services" },
   { id: "process", label: "Process" },
   { id: "about", label: "About" },
+  { id: "contact", label: "Contact" },
 ];
 
 const initials = profile.name
@@ -110,7 +112,7 @@ export function SiteHeader() {
               : "h-16 max-w-6xl border-line/70 shadow-[0_8px_32px_-16px_rgb(12_12_13/0.15)]"
           } ${open ? "border-line! shadow-none!" : ""}`}
         >
-          <Link href="/" className="group flex items-center gap-2.5 text-sm font-semibold tracking-tight">
+          <HomeLink className="group flex items-center gap-2.5 text-sm font-semibold tracking-tight">
             <span className="relative">
               <span
                 className="grid size-10 place-items-center rounded-full bg-primary text-xs font-bold text-on-primary transition-[translate,box-shadow] duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:-translate-y-0.5 group-hover:shadow-[0_8px_20px_-6px_rgb(12_12_13/0.45)]"
@@ -126,9 +128,9 @@ export function SiteHeader() {
               {profile.name}
               <span className="block text-xs font-normal text-muted">{profile.role}</span>
             </span>
-          </Link>
+          </HomeLink>
 
-          <nav aria-label="Main" className="hidden md:block">
+          <nav aria-label="Main" className="hidden lg:block">
             <ul ref={listRef} className="relative flex items-center text-sm" onMouseLeave={() => setHovered(null)}>
               <span
                 aria-hidden
@@ -174,7 +176,7 @@ export function SiteHeader() {
               aria-expanded={open}
               aria-controls="mobile-menu"
               aria-label={open ? "Close menu" : "Open menu"}
-              className="grid size-11 place-items-center rounded-full bg-primary text-on-primary md:hidden"
+              className="grid size-11 place-items-center rounded-full bg-primary text-on-primary lg:hidden"
             >
               <span className="relative block h-3 w-4">
                 <span
@@ -193,13 +195,13 @@ export function SiteHeader() {
       <div
         id="mobile-menu"
         data-open={open ? "" : undefined}
-        className="mobile-menu fixed inset-0 z-30 flex flex-col bg-paper px-6 pt-28 pb-10 md:hidden"
+        className="mobile-menu fixed inset-0 z-30 flex flex-col bg-paper px-6 pt-28 pb-10 lg:hidden"
         aria-hidden={!open}
         inert={!open}
       >
         <p className="font-mono text-xs tracking-wider text-muted uppercase">Menu</p>
         <ul className="mt-6 space-y-1">
-          {[...nav, { id: "faq", label: "FAQ" }, { id: "contact", label: "Contact" }].map((item, i) => (
+          {[...nav.slice(0, -1), { id: "faq", label: "FAQ" }, nav[nav.length - 1]].map((item, i) => (
             <li key={item.id} className="mask block">
               <Link
                 href={`/#${item.id}`}

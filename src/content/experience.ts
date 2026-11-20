@@ -10,7 +10,7 @@ export const timeline = [
     when: "2026",
     title: "Freelance web developer",
     org: "S&S LLC, Muscat",
-    description: "Designed and built a bilingual English and Arabic business website.",
+    description: "Designed and built a business website with WhatsApp enquiries and quote requests.",
   },
   {
     when: "Aug 2025 – Apr 2026",
@@ -28,7 +28,7 @@ export const timeline = [
 
 export const skillGroups = [
   { title: "Front end", items: "HTML, CSS, JavaScript, React, Next.js, Tailwind CSS, Framer Motion, Vite" },
-  { title: "Web essentials", items: "Responsive design, accessibility, right-to-left layouts, SEO, Google Analytics 4" },
+  { title: "Web essentials", items: "Responsive design, accessibility, SEO, Google Analytics 4" },
   { title: "Back end", items: "Node.js, Express, Django, REST APIs, PostgreSQL, MySQL" },
   { title: "Workflow", items: "Git, GitHub, Lighthouse, Chrome DevTools, Cloudflare Pages, Google Cloud Run" },
 ];

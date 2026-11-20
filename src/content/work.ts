@@ -16,6 +16,8 @@ export type CaseStudy = {
   brief: string;
   built: string[];
   gallery: { src: string; alt: string; caption: string }[];
+  /** The client's own words, copied exactly, with their permission. Never write one for them. */
+  testimonial?: { quote: string; name: string; role: string };
 };
 
 export const caseStudies: CaseStudy[] = [

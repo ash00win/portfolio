@@ -123,6 +123,19 @@ export default async function CaseStudyPage({ params }: PageProps<"/work/[slug]"
         </aside>
       </Container>
 
+      {study.testimonial && (
+        <Container className="pb-16">
+          <figure data-reveal className="mx-auto max-w-3xl text-center">
+            <blockquote className="text-2xl leading-snug font-semibold tracking-tight text-balance sm:text-3xl">
+              &ldquo;{study.testimonial.quote}&rdquo;
+            </blockquote>
+            <figcaption className="mt-4 text-muted">
+              {study.testimonial.name}, {study.testimonial.role}
+            </figcaption>
+          </figure>
+        </Container>
+      )}
+
       {study.gallery.length > 0 && (
         <Container className="pb-20">
           <div className="grid gap-8 md:grid-cols-2">

@@ -3,7 +3,7 @@
 import Lenis from "lenis";
 import "lenis/dist/lenis.css";
 import { usePathname } from "next/navigation";
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 
 const clamp = (v: number) => Math.min(1, Math.max(0, v));
 
@@ -25,10 +25,12 @@ const clamp = (v: number) => Math.min(1, Math.max(0, v));
  */
 export function Effects() {
   const pathname = usePathname();
+  // False until the first page has loaded; afterwards every pathname change is an in-app navigation.
+  const navigated = useRef(false);
 
-  // Scroll reveals.
+  // Scroll reveals. Also picks up elements added later (content edits, swapped components),
+  // so nothing can get stuck invisible.
   useEffect(() => {
-    const pending = document.querySelectorAll<HTMLElement>("[data-reveal]:not([data-shown])");
     const io = new IntersectionObserver(
       (entries) => {
         for (const entry of entries) {
@@ -39,8 +41,24 @@ export function Effects() {
       },
       { rootMargin: "0px 0px -10% 0px" },
     );
-    pending.forEach((el) => io.observe(el));
-    return () => io.disconnect();
+    const watch = (root: ParentNode) =>
+      root.querySelectorAll<HTMLElement>("[data-reveal]:not([data-shown])").forEach((el) => io.observe(el));
+    watch(document);
+
+    const mo = new MutationObserver((mutations) => {
+      for (const m of mutations) {
+        for (const node of m.addedNodes) {
+          if (!(node instanceof HTMLElement)) continue;
+          if (node.matches("[data-reveal]:not([data-shown])")) io.observe(node);
+          watch(node);
+        }
+      }
+    });
+    mo.observe(document.body, { childList: true, subtree: true });
+    return () => {
+      io.disconnect();
+      mo.disconnect();
+    };
   }, [pathname]);
 
   // Numbers that count up when they first come into view; the real value is in the HTML.
@@ -91,9 +109,17 @@ export function Effects() {
       ? new Lenis({ autoRaf: true, lerp: 0.12, anchors: { offset: -96 } })
       : null;
 
+    // A new page (in-app navigation, not a #section link) always starts at the top, so no stale
+    // scroll position carries over from the page you came from.
+    if (navigated.current && !window.location.hash) {
+      window.scrollTo(0, 0);
+      lenis?.scrollTo(0, { immediate: true, force: true });
+    }
+    navigated.current = true;
+
     // Elements that read the scroll values. Each belongs to its nearest [data-scroll] ancestor.
     const CONSUMERS =
-      ".hero-exit, .hero-aurora, .hero-previews, .grow-in, .parallax-img, .big-row-left, .big-row-right, .scrub-word, .footer-name";
+      ".hero-exit, .hero-aurora, .hero-previews, .hero-showcase, .grow-in, .parallax-img, .big-row-left, .big-row-right, .scrub-word, .footer-name";
     type Tracked = { el: HTMLElement; targets: HTMLElement[]; top: number; height: number; last: string };
     type Pinned = { el: HTMLElement; targets: HTMLElement[]; top: number; height: number; last: string };
     let tracked: Tracked[] = [];
